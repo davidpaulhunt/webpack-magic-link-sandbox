@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const outputPath = path.resolve(__dirname, 'build', 'js');
+const outputPath = path.resolve(__dirname, 'web', 'build', 'js');
 
 const plugins = [
   new webpack.DefinePlugin({
@@ -14,7 +14,7 @@ const plugins = [
 
 module.exports = {
   entry: {
-    app: ['./src/entry.js'],
+    app: ['./web/src/entry.js'],
     vendor: [
       'react',
       'react-dom',

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.bundle.js",
-    "start-dev": "concurrently --kill-others \"nodemon server.bundle.js --watch server.bundle.js\" \"npm run watch-webpack\" \"npm run watch-webpack-server\"",
+    "start-dev": "concurrently --kill-others \"npm run api-dev\" \"npm run web-dev\" \"npm run watch-webpack\" \"npm run watch-webpack-server\"",
+    "api-dev": "nodemon ./api --watch ./api",
+    "web-dev": "concurrently --kill-others \"nodemon server.bundle.js --watch server.bundle.js\"",
     "watch-webpack": "webpack -w",
     "watch-webpack-server": "webpack -w --config webpack.server.config.js",
     "build": "npm run build-webpack && npm run build-webpack-server",

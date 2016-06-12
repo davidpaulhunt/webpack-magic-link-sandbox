@@ -113,7 +113,7 @@
 	app.listen(4000, function () {
 	  process.stdout.write('\nNow running on port 4000\n');
 	});
-	/* WEBPACK VAR INJECTION */}.call(exports, "src"))
+	/* WEBPACK VAR INJECTION */}.call(exports, "web/src"))
 
 /***/ },
 /* 2 */
