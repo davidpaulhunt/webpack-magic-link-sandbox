@@ -47,7 +47,9 @@ webpackJsonp([0],{
 
 	var store = (0, _redux.createStore)((0, _redux.combineReducers)(_extends({}, _redux3.default, {
 	  routing: _reactRouterRedux.routerReducer
-	})), (0, _redux.applyMiddleware)(_reduxThunk2.default));
+	})), (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2.default), typeof window !== 'undefined' && window.devToolsExtension ? window.devToolsExtension() : function (f) {
+	  return f;
+	}));
 
 	var history = (0, _reactRouterRedux.syncHistoryWithStore)(_reactRouter.browserHistory, store);
 
