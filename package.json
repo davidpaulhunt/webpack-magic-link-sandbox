@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.bundle.js",
     "start-dev": "concurrently --kill-others \"npm run api-dev\" \"npm run web-dev\" \"npm run watch-webpack\" \"npm run watch-webpack-server\"",
-    "api-dev": "nodemon ./api --watch ./api",
+    "api-dev": "nodemon ./api --watch ./api --watch .env",
     "web-dev": "concurrently --kill-others \"nodemon server.bundle.js --watch server.bundle.js\"",
     "watch-webpack": "webpack -w",
     "watch-webpack-server": "webpack -w --config webpack.server.config.js",
@@ -18,10 +18,27 @@
   "author": "David Hunt <davidpaulhunt@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^0.8.7",
+    "bluebird": "^3.4.0",
+    "body-parser": "^1.15.1",
+    "bookshelf": "^0.9.5",
+    "checkit": "^0.6.0",
     "concurrently": "^2.1.0",
     "cookie-parser": "^1.4.3",
+    "dotenv": "^2.0.0",
     "express": "^4.13.4",
-    "react-router": "^2.4.1"
+    "express-jwt": "^3.4.0",
+    "http-proxy": "^1.13.3",
+    "jsonwebtoken": "^7.0.0",
+    "knex": "^0.11.5",
+    "mysql": "^2.11.1",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.4.1",
+    "react-router-redux": "^4.0.5",
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.1.0",
+    "superagent": "^2.0.0",
+    "uuid": "^2.0.2"
   },
   "devDependencies": {
     "babel-core": "^6.9.1",

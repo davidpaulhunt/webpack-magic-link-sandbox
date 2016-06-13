@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import Form from '../components/form';
 import FormInput from '../components/form_input';
+import request from 'superagent';
 
 export default class SignupContainer extends Component {
   static contextTypes = {
@@ -10,7 +11,24 @@ export default class SignupContainer extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.context.router.push('/success');
+
+    const form = e.target;
+    const params = {
+      username: form.querySelector('[name="username"]').value,
+      email: form.querySelector('[name="email"]').value,
+    };
+
+    request.post('/api/auth/signup')
+      .send(params)
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        if (res.statusCode === 200) {
+          this.context.router.push('/success');
+        } else {
+          console.log(err);
+          alert('Oops, there was an error signing you up');
+        }
+      });
   }
 
   render() {

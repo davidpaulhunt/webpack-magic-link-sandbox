@@ -62,36 +62,48 @@
 
 	var _express2 = _interopRequireDefault(_express);
 
-	var _cookieParser = __webpack_require__(4);
+	var _bodyParser = __webpack_require__(4);
+
+	var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
+	var _cookieParser = __webpack_require__(5);
 
 	var _cookieParser2 = _interopRequireDefault(_cookieParser);
 
-	var _react = __webpack_require__(5);
+	var _proxy = __webpack_require__(6);
+
+	var _proxy2 = _interopRequireDefault(_proxy);
+
+	var _superagent = __webpack_require__(8);
+
+	var _superagent2 = _interopRequireDefault(_superagent);
+
+	var _react = __webpack_require__(9);
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _server = __webpack_require__(6);
+	var _server = __webpack_require__(10);
 
 	var _server2 = _interopRequireDefault(_server);
 
-	var _html = __webpack_require__(7);
+	var _html = __webpack_require__(11);
 
 	var _html2 = _interopRequireDefault(_html);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	/* eslint-disable no-param-reassign */
+	var app = (0, _express2.default)(); /* eslint-disable no-param-reassign */
 
-	var app = (0, _express2.default)();
+	var formParser = _bodyParser2.default.urlencoded({ extended: false });
 
+	app.use(formParser);
 	app.use((0, _cookieParser2.default)());
 
 	app.use(_express2.default.static(_path2.default.join(__dirname, '..', 'build'))); // Use the build folder first.
 	app.use(_express2.default.static(_path2.default.join(__dirname, 'public'))); // Fallback to public.
-
 	app.use(function (req, res, next) {
 	  var uid = req.cookies.gouid;
-	  var token = req.cookies['wt-' + uid];
+	  var token = req.cookies['gokey-' + uid];
 	  req.authentication = {};
 	  if (token) {
 	    req.authentication.token = token;
@@ -100,10 +112,21 @@
 	  next();
 	});
 
+	app.use('/api', (0, _proxy2.default)('http://127.0.0.1:4001'));
+
 	app.post('/go/:uid/:token', function (req, res) {
-	  res.cookie('gouid', req.params.uid);
-	  res.cookie('wt-' + req.params.uid, req.params.token);
-	  res.redirect('/');
+	  _superagent2.default.post('http://127.0.0.1:4001/auth/redeem').send({
+	    uid: req.params.uid,
+	    token: req.params.token
+	  }).set('Accept', 'application/json').end(function (err, authRes) {
+	    if (err || !authRes.ok) {
+	      res.redirect('/');
+	    } else {
+	      res.cookie('gouid', authRes.body.user.id);
+	      res.cookie('gokey-' + authRes.body.user.id, authRes.body.jwt);
+	      res.redirect('/');
+	    }
+	  });
 	});
 
 	app.use(function (req, res) {
@@ -131,22 +154,74 @@
 /* 4 */
 /***/ function(module, exports) {
 
-	module.exports = require("cookie-parser");
+	module.exports = require("body-parser");
 
 /***/ },
 /* 5 */
 /***/ function(module, exports) {
 
-	module.exports = require("react");
+	module.exports = require("cookie-parser");
 
 /***/ },
 /* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _httpProxy = __webpack_require__(7);
+
+	var _httpProxy2 = _interopRequireDefault(_httpProxy);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function (uri) {
+	  var proxy = _httpProxy2.default.createProxyServer({
+	    target: uri,
+	    prependPath: false,
+	    xfwd: true,
+	    changeOrigin: true
+	  });
+	  proxy.on('proxyReq', function (proxyReq, req) {
+	    if (req.authentication && req.authentication.token) {
+	      proxyReq.setHeader('Authorization', 'Bearer ' + req.authentication.token);
+	    }
+	  });
+
+	  return function apiProxy(req, res) {
+	    proxy.web(req, res);
+	  };
+	};
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	module.exports = require("http-proxy");
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	module.exports = require("superagent");
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	module.exports = require("react");
+
+/***/ },
+/* 10 */
 /***/ function(module, exports) {
 
 	module.exports = require("react-dom/server");
 
 /***/ },
-/* 7 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -157,7 +232,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _react = __webpack_require__(5);
+	var _react = __webpack_require__(9);
 
 	var _react2 = _interopRequireDefault(_react);
 

@@ -1,27 +1,22 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import { validateToken } from '../redux/modules/auth';
+import { connect } from 'react-redux';
 
-export default class TokenContainer extends Component {
+class TokenContainer extends Component {
   static propTypes = {
+    auth: PropTypes.object,
     params: PropTypes.object,
+    dispatch: PropTypes.func,
   };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      isValidatingToken: true,
-    };
-  }
 
   componentDidMount() {
     const { uid, token } = this.props.params;
-    setTimeout(() => {
-      this.setState({ isValidatingToken: false, isValidToken: true });
-    }, 2000);
+    this.props.dispatch(validateToken(uid, token));
   }
 
-  get tokenValidationResponse() {
-    if (this.state.isValidToken) {
+  tokenValidationResponse() {
+    if (this.props.auth.isValidToken) { // eslint-disable-line
       return (
         this.renderValidToken()
       );
@@ -68,8 +63,20 @@ export default class TokenContainer extends Component {
   render() {
     return (
       <div id="token-wrapper">
-        {this.state.isValidatingToken ? this.renderValidating() : this.tokenValidationResponse}
+        {
+          this.props.auth.isValidatingToken ? // eslint-disable-line
+            this.renderValidating() :
+            this.props.auth.isValidToken ?
+              this.renderValidToken() :
+              this.renderInvalidToken()
+        }
       </div>
     );
   }
 }
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps)(TokenContainer);
