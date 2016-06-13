@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const app = require('./src');
 
 app.listen(4001, () => {
