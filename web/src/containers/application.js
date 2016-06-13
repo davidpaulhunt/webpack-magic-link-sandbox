@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import request from 'superagent';
 
 class ApplicationContainer extends Component {
   static propTypes = {
@@ -8,49 +7,18 @@ class ApplicationContainer extends Component {
     user: PropTypes.object,
     me: PropTypes.object,
     isAuthenticated: PropTypes.bool,
+    isAuthenticating: PropTypes.bool,
     auth: PropTypes.object,
+    dispatch: PropTypes.func,
   };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      isAuthenticated: false,
-      user: null,
-    };
-  }
-
-  componentDidMount() {
-    if (!this.state.isAuthenticated) {
-      request.get('/api/me')
-        .set('Accept', 'application/json')
-        .end((err, res) => {
-          if (res.statusCode === 200) {
-            this.setState({
-              isAuthenticated: true,
-              user: res.body,
-            });
-          }
-        });
-    }
-  }
-
-  get content() {
-    return (
-      React.Children.map(this.props.children, (child) =>
-        React.cloneElement(child, {
-          user: this.state.user,
-          me: this.state.user,
-          isAuthenticated: this.state.isAuthenticated,
-        }))
-    );
-  }
 
   render() {
     const childrenWithProps = React.Children.map(this.props.children, (child) =>
       React.cloneElement(child, {
-        user: this.state.user,
-        me: this.state.user,
-        isAuthenticated: this.state.isAuthenticated,
+        user: this.props.user,
+        me: this.props.user,
+        isAuthenticated: this.props.isAuthenticated,
+        isAuthenticating: this.props.isAuthenticating,
       }));
     return (
       <div id="app">
@@ -62,8 +30,9 @@ class ApplicationContainer extends Component {
 
 const mapStateToProps = (state) => ({
   me: state.me,
-  user: state.user,
-  isAuthenticated: state.isAuthenticated,
+  user: state.me.user,
+  isAuthenticating: state.me.isAuthenticating,
+  isAuthenticated: state.me.isAuthenticated,
 });
 
 module.exports = connect(mapStateToProps)(ApplicationContainer);

@@ -8,15 +8,26 @@ import DashboardContainer from './containers/dashboard';
 import SuccessContainer from './containers/success';
 import TokenContainer from './containers/token';
 
-export const makeRoutes = () => (
-  <Route path="/" component={AppContainer}>
-    <IndexRoute component={HomeContainer} />
-    <Route path="/" component={HomeContainer} />
-    <Route path="go/:uid/:token" component={TokenContainer} />
-    <Route path="signin" component={SigninContainer} />
-    <Route path="signup" component={SignupContainer} />
-    <Route path="success" component={SuccessContainer} />
-    <Route path="dashboard" component={DashboardContainer} />
-    <Redirect from="*" to="/" />
-  </Route>
-);
+export const makeRoutes = (store) => {
+  function authenticate(state, replace, next) {
+    const { me } = store.getState();
+    if (!me.isAuthenticated) {
+      replace('/signin');
+    }
+
+    next();
+  }
+
+  return (
+    <Route path="/" component={AppContainer}>
+      <IndexRoute component={HomeContainer} />
+      <Route path="/" component={HomeContainer} />
+      <Route path="go/:uid/:token" component={TokenContainer} />
+      <Route path="signin" component={SigninContainer} />
+      <Route path="signup" component={SignupContainer} />
+      <Route path="success" component={SuccessContainer} />
+      <Route path="dashboard" component={DashboardContainer} onEnter={authenticate} />
+      <Redirect from="*" to="/" />
+    </Route>
+  );
+};

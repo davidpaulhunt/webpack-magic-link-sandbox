@@ -41,6 +41,8 @@ webpackJsonp([0],{
 
 	var _redux3 = _interopRequireDefault(_redux2);
 
+	var _me = __webpack_require__(576);
+
 	__webpack_require__(572);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -53,17 +55,19 @@ webpackJsonp([0],{
 
 	var history = (0, _reactRouterRedux.syncHistoryWithStore)(_reactRouter.browserHistory, store);
 
-	var routes = (0, _routes.makeRoutes)();
+	var routes = (0, _routes.makeRoutes)(store);
 
-	(0, _reactDom.render)(_react2.default.createElement(
-	  _reactRedux.Provider,
-	  { store: store },
-	  _react2.default.createElement(
-	    _reactRouter.Router,
-	    { history: history },
-	    routes
-	  )
-	), document.getElementById('root'));
+	store.dispatch((0, _me.loadMe)()).then(function () {
+	  (0, _reactDom.render)(_react2.default.createElement(
+	    _reactRedux.Provider,
+	    { store: store },
+	    _react2.default.createElement(
+	      _reactRouter.Router,
+	      { history: history },
+	      routes
+	    )
+	  ), document.getElementById('root'));
+	});
 
 /***/ },
 
@@ -7866,7 +7870,19 @@ webpackJsonp([0],{
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var makeRoutes = exports.makeRoutes = function makeRoutes() {
+	var makeRoutes = exports.makeRoutes = function makeRoutes(store) {
+	  function authenticate(state, replace, next) {
+	    var _store$getState = store.getState();
+
+	    var me = _store$getState.me;
+
+	    if (!me.isAuthenticated) {
+	      replace('/signin');
+	    }
+
+	    next();
+	  }
+
 	  return _react2.default.createElement(
 	    _reactRouter.Route,
 	    { path: '/', component: _application2.default },
@@ -7876,7 +7892,7 @@ webpackJsonp([0],{
 	    _react2.default.createElement(_reactRouter.Route, { path: 'signin', component: _signin2.default }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'signup', component: _signup2.default }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'success', component: _success2.default }),
-	    _react2.default.createElement(_reactRouter.Route, { path: 'dashboard', component: _dashboard2.default }),
+	    _react2.default.createElement(_reactRouter.Route, { path: 'dashboard', component: _dashboard2.default, onEnter: authenticate }),
 	    _react2.default.createElement(_reactRouter.Redirect, { from: '*', to: '/' })
 	  );
 	};
@@ -7896,10 +7912,6 @@ webpackJsonp([0],{
 
 	var _reactRedux = __webpack_require__(542);
 
-	var _superagent = __webpack_require__(556);
-
-	var _superagent2 = _interopRequireDefault(_superagent);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -7911,44 +7923,23 @@ webpackJsonp([0],{
 	var ApplicationContainer = function (_Component) {
 	  _inherits(ApplicationContainer, _Component);
 
-	  function ApplicationContainer(props) {
+	  function ApplicationContainer() {
 	    _classCallCheck(this, ApplicationContainer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ApplicationContainer).call(this, props));
-
-	    _this.state = {
-	      isAuthenticated: false,
-	      user: null
-	    };
-	    return _this;
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ApplicationContainer).apply(this, arguments));
 	  }
 
 	  _createClass(ApplicationContainer, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var _this2 = this;
-
-	      if (!this.state.isAuthenticated) {
-	        _superagent2.default.get('/api/me').set('Accept', 'application/json').end(function (err, res) {
-	          if (res.statusCode === 200) {
-	            _this2.setState({
-	              isAuthenticated: true,
-	              user: res.body
-	            });
-	          }
-	        });
-	      }
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this3 = this;
+	      var _this2 = this;
 
 	      var childrenWithProps = _react2.default.Children.map(this.props.children, function (child) {
 	        return _react2.default.cloneElement(child, {
-	          user: _this3.state.user,
-	          me: _this3.state.user,
-	          isAuthenticated: _this3.state.isAuthenticated
+	          user: _this2.props.user,
+	          me: _this2.props.user,
+	          isAuthenticated: _this2.props.isAuthenticated,
+	          isAuthenticating: _this2.props.isAuthenticating
 	        });
 	      });
 	      return _react2.default.createElement(
@@ -7956,19 +7947,6 @@ webpackJsonp([0],{
 	        { id: 'app' },
 	        childrenWithProps
 	      );
-	    }
-	  }, {
-	    key: 'content',
-	    get: function get() {
-	      var _this4 = this;
-
-	      return _react2.default.Children.map(this.props.children, function (child) {
-	        return _react2.default.cloneElement(child, {
-	          user: _this4.state.user,
-	          me: _this4.state.user,
-	          isAuthenticated: _this4.state.isAuthenticated
-	        });
-	      });
 	    }
 	  }]);
 
@@ -7980,15 +7958,18 @@ webpackJsonp([0],{
 	  user: _react.PropTypes.object,
 	  me: _react.PropTypes.object,
 	  isAuthenticated: _react.PropTypes.bool,
-	  auth: _react.PropTypes.object
+	  isAuthenticating: _react.PropTypes.bool,
+	  auth: _react.PropTypes.object,
+	  dispatch: _react.PropTypes.func
 	};
 
 
 	var mapStateToProps = function mapStateToProps(state) {
 	  return {
 	    me: state.me,
-	    user: state.user,
-	    isAuthenticated: state.isAuthenticated
+	    user: state.me.user,
+	    isAuthenticating: state.me.isAuthenticating,
+	    isAuthenticated: state.me.isAuthenticated
 	  };
 	};
 
@@ -9610,6 +9591,8 @@ webpackJsonp([0],{
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactRedux = __webpack_require__(542);
+
 	var _reactRouter = __webpack_require__(467);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -9653,7 +9636,11 @@ webpackJsonp([0],{
 	  return HomeContainer;
 	}(_react.Component);
 
-	exports.default = HomeContainer;
+	HomeContainer.propTypes = {
+	  me: _react.PropTypes.object,
+	  dispatch: _react.PropTypes.func
+	};
+	exports.default = (0, _reactRedux.connect)()(HomeContainer);
 
 /***/ },
 
@@ -10371,10 +10358,15 @@ webpackJsonp([0],{
 
 	var _auth2 = _interopRequireDefault(_auth);
 
+	var _me = __webpack_require__(576);
+
+	var _me2 = _interopRequireDefault(_me);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = {
-	  auth: _auth2.default
+	  auth: _auth2.default,
+	  me: _me2.default
 	};
 
 /***/ },
@@ -10727,6 +10719,90 @@ webpackJsonp([0],{
 			URL.revokeObjectURL(oldSrc);
 	}
 
+
+/***/ },
+
+/***/ 576:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.ERRORED = exports.FETCHED = exports.FETCHING = undefined;
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.loadMe = loadMe;
+
+	var _superagent = __webpack_require__(556);
+
+	var _superagent2 = _interopRequireDefault(_superagent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var FETCHING = exports.FETCHING = 'FETCHING_ME';
+	function fetchMe() {
+	  return { type: FETCHING };
+	}
+
+	var FETCHED = exports.FETCHED = 'FETCHED_ME';
+	function fetchedMe(user) {
+	  return { type: FETCHED, user: user };
+	}
+
+	var ERRORED = exports.ERRORED = 'FETCHED_ERROR';
+	function fetchedError(error) {
+	  return { type: ERRORED, error: error };
+	}
+
+	var initialState = {
+	  isAuthenticated: false,
+	  isAuthenticating: false,
+	  user: null,
+	  error: null
+	};
+
+	function meLoader() {
+	  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case FETCHING:
+	      return _extends({}, state, {
+	        isAuthenticating: true
+	      });
+	    case FETCHED:
+	      return _extends({}, state, {
+	        isAuthenticated: true,
+	        isAuthenticating: false,
+	        user: action.user
+	      });
+	    case ERRORED:
+	      return _extends({}, state, {
+	        isAuthenticated: false,
+	        isAuthenticating: false,
+	        error: action.error
+	      });
+	    default:
+	      return state;
+	  }
+	}
+
+	function loadMe() {
+	  return function (dispatch) {
+	    dispatch(fetchMe());
+
+	    return Promise.resolve(_superagent2.default.get('/api/me').set('Accept', 'application/json')).then(function (response) {
+	      return dispatch(fetchedMe(response.body.user));
+	    }).catch(function (error) {
+	      return dispatch(fetchedError(error));
+	    });
+	  };
+	}
+
+	exports.default = meLoader;
 
 /***/ }
 

@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 import { makeRoutes } from './routes';
 import rootReducer from './redux';
+import { loadMe } from './redux/modules/me';
 import './style.css';
 
 const store = createStore(
@@ -23,12 +24,14 @@ const store = createStore(
 
 const history = syncHistoryWithStore(browserHistory, store);
 
-const routes = makeRoutes();
+const routes = makeRoutes(store);
 
-render((
-  <Provider store={store}>
-    <Router history={history}>
-      {routes}
-    </Router>
-  </Provider>
-), document.getElementById('root'));
+store.dispatch(loadMe()).then(() => {
+  render((
+    <Provider store={store}>
+      <Router history={history}>
+        {routes}
+      </Router>
+    </Provider>
+  ), document.getElementById('root'));
+});

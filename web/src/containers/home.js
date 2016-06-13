@@ -1,7 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router';
 
-export default class HomeContainer extends Component {
+class HomeContainer extends Component {
+  static propTypes = {
+    me: PropTypes.object,
+    dispatch: PropTypes.func,
+  }
+
   render() {
     return (
       <div className="home-wrapper">
@@ -10,3 +16,5 @@ export default class HomeContainer extends Component {
     );
   }
 }
+
+export default connect()(HomeContainer);
