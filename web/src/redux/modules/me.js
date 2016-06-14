@@ -15,14 +15,25 @@ function fetchedError(error) {
   return { type: ERRORED, error };
 }
 
+export const SIGNING_OUT = 'SIGNING_OUT';
+function signMeOut() {
+  return { type: SIGNING_OUT };
+}
+
+export const SIGNED_OUT = 'SIGNED_OUT';
+function signedOut() {
+  return { type: SIGNED_OUT };
+}
+
 const initialState = {
   isAuthenticated: false,
   isAuthenticating: false,
+  isSigningOut: false,
   user: null,
   error: null,
 };
 
-function meLoader(state = initialState, action) {
+function meActions(state = initialState, action) {
   switch (action.type) {
     case FETCHING:
       return {
@@ -43,6 +54,18 @@ function meLoader(state = initialState, action) {
         isAuthenticating: false,
         error: action.error,
       };
+    case SIGNING_OUT:
+      return {
+        ...state,
+        isSigningOut: true,
+      };
+    case SIGNED_OUT:
+      return {
+        ...state,
+        isAuthenticated: false,
+        isSigningOut: false,
+        user: null,
+      };
     default:
       return state;
   }
@@ -61,4 +84,15 @@ export function loadMe() {
   };
 }
 
-export default meLoader;
+export function signout() {
+  return (dispatch) => {
+    dispatch(signMeOut());
+
+    return Promise.resolve(
+      request.get('/signout')
+    )
+    .then(() => dispatch(signedOut()));
+  };
+}
+
+export default meActions;

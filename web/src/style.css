@@ -1,1 +1,11 @@
+.app-nav {
+  padding-top: 15px;
+  margin-bottom: 15px;
+}
 
+.nav-link {
+  padding: 0 15px;
+  float: right;
+  position: relative;
+  top: -15px;
+}

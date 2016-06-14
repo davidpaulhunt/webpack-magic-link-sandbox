@@ -124,9 +124,18 @@
 	    } else {
 	      res.cookie('gouid', authRes.body.user.id);
 	      res.cookie('gokey-' + authRes.body.user.id, authRes.body.jwt);
-	      res.redirect('/');
+	      res.redirect('/dashboard');
 	    }
 	  });
+	});
+
+	app.get('/signout', function (req, res) {
+	  var currentUid = req.cookies.gouid;
+	  if (currentUid) {
+	    res.clearCookie('gokey-' + currentUid);
+	    res.clearCookie('gouid');
+	  }
+	  res.redirect('/');
 	});
 
 	app.use(function (req, res) {
