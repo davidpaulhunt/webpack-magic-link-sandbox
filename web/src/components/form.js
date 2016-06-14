@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Button, FormGroup, ControlLabel } from 'react-bootstrap';
 
 export default class FormComponent extends Component {
   static propTypes = {
@@ -10,10 +11,10 @@ export default class FormComponent extends Component {
   renderChildren() {
     return React.Children.map(this.props.children, (child) =>
       (
-      <div>
-        <label>{child.props.name}</label>
+      <FormGroup>
+        <ControlLabel>{child.props.name}</ControlLabel>
         {child}
-      </div>
+      </FormGroup>
       )
     );
   }
@@ -23,9 +24,9 @@ export default class FormComponent extends Component {
       <div id={`${this.props.name}-form`}>
         <form onSubmit={this.props.handleSubmit}>
           {this.renderChildren()}
-          <div className="form-actions">
-            <button type="submit">Submit</button>
-          </div>
+          <FormGroup>
+            <Button type="submit" bsStyle="primary">Submit</Button>
+          </FormGroup>
         </form>
       </div>
     );

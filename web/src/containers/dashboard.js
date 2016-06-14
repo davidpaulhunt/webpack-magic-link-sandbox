@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Form from '../components/form';
 import FormInput from '../components/form_input';
-import { Button, Modal } from 'react-bootstrap';
+import { Row, Col, Button, Modal } from 'react-bootstrap';
 import { editAccount, updateUser, cancelAccountUpdate } from '../redux/modules/dashboard';
 import serializer from '../helpers/form_serializer';
 
@@ -30,30 +30,39 @@ class DashboardContainer extends Component {
 
   render() {
     return (
-      <div className="dashboard-wrapper">
-        <p className="greeting">Hello, {this.props.me.user.username}!</p>
-        <div className="dashboard-actions">
-          <div>
-            <Button onClick={this.editAccount}>Edit Account</Button>
-            <Modal show={this.props.dashboard.isUpdatingAccount} onHide={this.stopEditAccount}>
-              <Modal.Header closeButton><Modal.Title>Edit Account</Modal.Title></Modal.Header>
-              <Modal.Body>
-                {
-                  this.props.dashboard.error ?
-                    (<p>{this.props.dashboard.error.message}</p>) : null
-                }
-                <Form name="edit-account" handleSubmit={this.updateAccount}>
-                  <FormInput
-                    name="username"
-                    type="text"
-                    placeholder={this.props.me.user.username}
-                  />
-                </Form>
-              </Modal.Body>
-            </Modal>
+      <Row className="show-grid">
+        <Col lg={10} lgOffset={1}>
+          <div className="dashboard-wrapper">
+            <p className="greeting">Hello, {this.props.me.user.username}!</p>
+            <div className="dashboard-actions">
+              <div>
+                <Button onClick={this.editAccount}>Edit Account</Button>
+                <Modal show={this.props.dashboard.isUpdatingAccount} onHide={this.stopEditAccount}>
+                  <Modal.Header closeButton><Modal.Title>Edit Account</Modal.Title></Modal.Header>
+                  <Modal.Body>
+                    {
+                      this.props.dashboard.error ?
+                        (<p>{this.props.dashboard.error.message}</p>) : null
+                    }
+                    <Form name="edit-account" handleSubmit={this.updateAccount}>
+                      <FormInput
+                        name="email"
+                        type="email"
+                        placeholder={this.props.me.user.email}
+                      />
+                      <FormInput
+                        name="username"
+                        type="text"
+                        placeholder={this.props.me.user.username}
+                      />
+                    </Form>
+                  </Modal.Body>
+                </Modal>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </Col>
+      </Row>
     );
   }
   //

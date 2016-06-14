@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { signout } from '../redux/modules/me';
+import { Grid } from 'react-bootstrap';
 
 const navLink = (path, text, onClickHandler = f => f) => (
   <Link to={`/${path}`} className="nav-link" onClick={onClickHandler}>{text}</Link>
@@ -58,7 +59,7 @@ class ApplicationContainer extends Component {
           this.props.isAuthenticated ?
             this.renderAuthenticatedNav() : this.renderUnauthenticatedNav()
         }
-        {childrenWithProps}
+        <Grid>{childrenWithProps}</Grid>
       </div>
     );
   }
