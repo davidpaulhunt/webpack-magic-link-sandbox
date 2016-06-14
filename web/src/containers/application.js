@@ -19,8 +19,11 @@ class ApplicationContainer extends Component {
     dispatch: PropTypes.func,
   };
 
-  handleSignout = (e) => {
-    e.preventDefault();
+  static contextTypes = {
+    router: PropTypes.object,
+  };
+
+  handleSignout = () => {
     this.props.dispatch(signout());
   }
 
@@ -45,7 +48,7 @@ class ApplicationContainer extends Component {
     const childrenWithProps = React.Children.map(this.props.children, (child) =>
       React.cloneElement(child, {
         user: this.props.user,
-        me: this.props.user,
+        me: this.props.me,
         isAuthenticated: this.props.isAuthenticated,
         isAuthenticating: this.props.isAuthenticating,
       }));

@@ -5,9 +5,13 @@ export default class Html extends React.Component {
     return (
       <html lang="en-us">
         <head>
-          <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+          <meta
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+            name="viewport"
+          />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" />
           <link rel="stylesheet" href="/css/main.css" media="screen" charSet="utf-8" />
           <script src="/js/vendor.bundle.js" charSet="utf-8"></script>
         </head>
@@ -16,6 +20,6 @@ export default class Html extends React.Component {
           <script src="/js/bundle.js" charSet="utf-8"></script>
         </body>
       </html>
-    )
+    );
   }
 }

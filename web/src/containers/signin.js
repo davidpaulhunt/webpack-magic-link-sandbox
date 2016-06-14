@@ -39,7 +39,6 @@ export default class SigninContainer extends Component {
             placeholder="you@areawesome.com"
           />
         </Form>
-        <p>Signed in? Go to <Link to="/dashboard">dashboard</Link>.</p>
         <p>Don't have an account? Sign up <Link to="/signup">here</Link>.</p>
       </div>
     );

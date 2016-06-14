@@ -28,7 +28,6 @@ function signedOut() {
 const initialState = {
   isAuthenticated: false,
   isAuthenticating: false,
-  isSigningOut: false,
   user: null,
   error: null,
 };

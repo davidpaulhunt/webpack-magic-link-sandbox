@@ -21,9 +21,9 @@ export const makeRoutes = (store) => {
   return (
     <Route path="/" component={AppContainer}>
       <IndexRoute component={HomeContainer} />
-      <Route path="/" component={HomeContainer} />
       <Route path="go/:uid/:token" component={TokenContainer} />
       <Route path="signin" component={SigninContainer} />
+      <Route path="/signout" component={HomeContainer} />
       <Route path="signup" component={SignupContainer} />
       <Route path="success" component={SuccessContainer} />
       <Route path="dashboard" component={DashboardContainer} onEnter={authenticate} />
